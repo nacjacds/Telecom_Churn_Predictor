@@ -1,4 +1,4 @@
-# Customer Churn Prediction for a Telecommunications Company
+# Customer Churn Prediction for a Telecom Provider
 
 This project aims to predict customer churn for a telecommunications company using machine learning models. Customer churn prediction helps the company identify customers who are likely to cancel their service, enabling proactive retention strategies.
 
