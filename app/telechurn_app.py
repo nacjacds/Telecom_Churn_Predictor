@@ -23,7 +23,7 @@ from sklearn.compose import ColumnTransformer
 
 # Cargar el modelo
 try:
-    with open('/mnt/data/modelo_gradientboosting.pkl', 'rb') as f:
+    with open('models/modelo_gradientboosting.pkl', 'rb') as f:
         loaded_model = pickle.load(f)
 except FileNotFoundError:
     st.error("El archivo del modelo no se encuentra en la ruta especificada.")
