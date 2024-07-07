@@ -30,16 +30,15 @@ except Exception as e:
     st.error(f"Error al cargar el modelo: {e}")
     st.stop()
 
-# Cargar el codificador (si fue guardado durante el entrenamiento)
-try:
-    with open('models/encoder.pkl', 'rb') as f:
-        encoder = pickle.load(f)
-except FileNotFoundError:
-    st.error("El archivo del codificador no se encuentra en la ruta especificada.")
-    st.stop()
-except Exception as e:
-    st.error(f"Error al cargar el codificador: {e}")
-    st.stop()
+# Definir el codificador
+encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+
+# Ajustar el codificador con las categorías conocidas
+# Estas categorías deben coincidir con las del modelo entrenado
+encoder.fit([
+    ['Male', 0, 'Yes', 'No', 1, 'Yes', 'No', 'DSL', 'Yes', 'No', 'No', 'No', 'No', 'No', 'Month-to-month', 'Yes', 'Electronic check', 29.85, 29.85]
+    # Agrega más ejemplos con todas las combinaciones de categorías posibles
+])
 
 # Título de la aplicación
 st.title("Churn Prediction App")
@@ -103,8 +102,11 @@ input_data = pd.DataFrame({
     'TotalCharges': [TotalCharges]
 })
 
+# Codificar las variables categóricas
+input_data_encoded = encoder.transform(input_data)
+
 # Botón para predecir
 if st.button("Predecir"):
-    prediction = predict_churn(input_data)
+    prediction = predict_churn(input_data_encoded)
     if prediction is not None:
         st.write(f"La predicción del modelo es: {'Churn' if prediction[0] == 1 else 'No Churn'}")
