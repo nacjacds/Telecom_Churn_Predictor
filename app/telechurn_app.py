@@ -34,21 +34,23 @@ except Exception as e:
     st.stop()
 
 # Definir las columnas categóricas y numéricas
-categorical_features = ['Contract', 'InternetService', 'PaymentMethod', 'OnlineSecurity', 'OnlineBackup',
+categorical_features = ['InternetService', 'PaymentMethod', 'OnlineSecurity', 'OnlineBackup',
                         'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies', 'MultipleLines',
-                        'Dependents', 'Partner']
+                        'Dependents', 'Partner', 'Contract_Month-to-month', 'Contract_One year', 'Contract_Two year']
 numeric_features = ['tenure', 'MonthlyCharges', 'TotalCharges']
 
 # Crear el transformador de columnas
 preprocessor = ColumnTransformer(
     transformers=[
-        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+        ('cat', OneHotEncoder(drop='first'), categorical_features)  # drop='first' para evitar la trampa de las variables ficticias
     ], remainder='passthrough'  # Deja las columnas numéricas sin cambios
 )
 
 # Crear un DataFrame de ejemplo para ajustar el codificador
 dummy_data = pd.DataFrame({
-    'Contract': ['Month-to-month'],
+    'Contract_Month-to-month': [1],
+    'Contract_One year': [0],
+    'Contract_Two year': [0],
     'InternetService': ['DSL'],
     'PaymentMethod': ['Electronic check'],
     'OnlineSecurity': ['Yes'],
@@ -88,6 +90,10 @@ st.write("Introduce las características del cliente:")
 
 # Entradas de las características
 contract = st.selectbox('Contract', ['Month-to-month', 'One year', 'Two year'])
+contract_month_to_month = 1 if contract == 'Month-to-month' else 0
+contract_one_year = 1 if contract == 'One year' else 0
+contract_two_year = 1 if contract == 'Two year' else 0
+
 internet_service = st.selectbox('Internet Service', ['DSL', 'Fiber optic', 'No'])
 payment_method = st.selectbox('Payment Method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'])
 online_security = st.selectbox('Online Security', ['Yes', 'No', 'No internet service'])
@@ -105,7 +111,9 @@ total_charges = st.number_input('Total Charges', min_value=0.0, max_value=10000.
 
 # Convertir las entradas en un formato adecuado para el modelo
 input_data = pd.DataFrame({
-    'Contract': [contract],
+    'Contract_Month-to-month': [contract_month_to_month],
+    'Contract_One year': [contract_one_year],
+    'Contract_Two year': [contract_two_year],
     'InternetService': [internet_service],
     'PaymentMethod': [payment_method],
     'OnlineSecurity': [online_security],
