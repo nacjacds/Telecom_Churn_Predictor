@@ -30,13 +30,26 @@ except Exception as e:
     st.error(f"Error al cargar el modelo: {e}")
     st.stop()
 
+# Cargar el codificador (si fue guardado durante el entrenamiento)
+try:
+    with open('models/encoder.pkl', 'rb') as f:
+        encoder = pickle.load(f)
+except FileNotFoundError:
+    st.error("El archivo del codificador no se encuentra en la ruta especificada.")
+    st.stop()
+except Exception as e:
+    st.error(f"Error al cargar el codificador: {e}")
+    st.stop()
+
 # Título de la aplicación
 st.title("Churn Prediction App")
 
 # Función para realizar predicciones
 def predict_churn(data):
     try:
-        prediction = loaded_model.predict(data)
+        # Codificar las variables categóricas
+        data_encoded = encoder.transform(data)
+        prediction = loaded_model.predict(data_encoded)
         return prediction
     except Exception as e:
         st.error(f"Error al realizar la predicción: {e}")
@@ -69,7 +82,6 @@ TotalCharges = st.number_input('Total Charges', min_value=0.0, max_value=10000.0
 
 # Convertir las entradas en un formato adecuado para el modelo
 input_data = pd.DataFrame({
-    'customer_id': [customer_id],
     'gender': [gender],
     'SeniorCitizen': [SeniorCitizen],
     'Partner': [Partner],
