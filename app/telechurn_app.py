@@ -21,10 +21,9 @@ import streamlit as st
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 
-
 # Cargar el modelo
 try:
-    with open('models/modelo_gradientboosting.pkl', 'rb') as f:
+    with open('/mnt/data/modelo_gradientboosting.pkl', 'rb') as f:
         loaded_model = pickle.load(f)
 except FileNotFoundError:
     st.error("El archivo del modelo no se encuentra en la ruta especificada.")
@@ -34,10 +33,8 @@ except Exception as e:
     st.stop()
 
 # Definir las columnas categóricas y numéricas
-categorical_features = ['gender', 'SeniorCitizen', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 
-                        'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 
-                        'StreamingTV', 'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod']
-numeric_features = ['tenure', 'MonthlyCharges', 'TotalCharges']
+categorical_features = ['gender', 'Partner']
+numeric_features = ['SeniorCitizen', 'tenure']
 
 # Crear el transformador de columnas
 preprocessor = ColumnTransformer(
@@ -51,22 +48,7 @@ dummy_data = pd.DataFrame({
     'gender': ['Male'],
     'SeniorCitizen': [0],
     'Partner': ['Yes'],
-    'Dependents': ['No'],
-    'tenure': [1],
-    'PhoneService': ['Yes'],
-    'MultipleLines': ['No phone service'],
-    'InternetService': ['DSL'],
-    'OnlineSecurity': ['No internet service'],
-    'OnlineBackup': ['No internet service'],
-    'DeviceProtection': ['No internet service'],
-    'TechSupport': ['No internet service'],
-    'StreamingTV': ['No internet service'],
-    'StreamingMovies': ['No internet service'],
-    'Contract': ['Month-to-month'],
-    'PaperlessBilling': ['Yes'],
-    'PaymentMethod': ['Electronic check'],
-    'MonthlyCharges': [29.85],
-    'TotalCharges': [29.85]
+    'tenure': [1]
 })
 
 # Ajustar el codificador
@@ -80,7 +62,7 @@ def predict_churn(data):
     try:
         # Transformar las variables categóricas
         data_encoded = preprocessor.transform(data)
-        # Convertir a DataFrame para asegurarnos de que las columnas coinciden
+        # Hacer la predicción
         prediction = loaded_model.predict(data_encoded)
         return prediction
     except Exception as e:
@@ -90,59 +72,22 @@ def predict_churn(data):
 # Crear la interfaz de usuario con Streamlit
 st.write("Introduce las características del cliente:")
 
-# Ejemplo de características que podrías usar (ajusta según tu modelo)
-customer_id = st.text_input('Customer ID')
+# Entradas de las características
 gender = st.selectbox('Gender', ['Male', 'Female'])
 SeniorCitizen = st.selectbox('Senior Citizen', [0, 1])
 Partner = st.selectbox('Partner', ['Yes', 'No'])
-Dependents = st.selectbox('Dependents', ['Yes', 'No'])
-tenure = st.slider('Tenure (months)', 0, 72, 1)
-PhoneService = st.selectbox('Phone Service', ['Yes', 'No'])
-MultipleLines = st.selectbox('Multiple Lines', ['Yes', 'No', 'No phone service'])
-InternetService = st.selectbox('Internet Service', ['DSL', 'Fiber optic', 'No'])
-OnlineSecurity = st.selectbox('Online Security', ['Yes', 'No', 'No internet service'])
-OnlineBackup = st.selectbox('Online Backup', ['Yes', 'No', 'No internet service'])
-DeviceProtection = st.selectbox('Device Protection', ['Yes', 'No', 'No internet service'])
-TechSupport = st.selectbox('Tech Support', ['Yes', 'No', 'No internet service'])
-StreamingTV = st.selectbox('Streaming TV', ['Yes', 'No', 'No internet service'])
-StreamingMovies = st.selectbox('Streaming Movies', ['Yes', 'No', 'No internet service'])
-Contract = st.selectbox('Contract', ['Month-to-month', 'One year', 'Two year'])
-PaperlessBilling = st.selectbox('Paperless Billing', ['Yes', 'No'])
-PaymentMethod = st.selectbox('Payment Method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'])
-MonthlyCharges = st.number_input('Monthly Charges', min_value=0.0, max_value=150.0, value=70.0)
-TotalCharges = st.number_input('Total Charges', min_value=0.0, max_value=10000.0, value=70.0)
+tenure = st.slider('Tenure (months)', 1, 72, 1)
 
 # Convertir las entradas en un formato adecuado para el modelo
 input_data = pd.DataFrame({
     'gender': [gender],
     'SeniorCitizen': [SeniorCitizen],
     'Partner': [Partner],
-    'Dependents': [Dependents],
-    'tenure': [tenure],
-    'PhoneService': [PhoneService],
-    'MultipleLines': [MultipleLines],
-    'InternetService': [InternetService],
-    'OnlineSecurity': [OnlineSecurity],
-    'OnlineBackup': [OnlineBackup],
-    'DeviceProtection': [DeviceProtection],
-    'TechSupport': [TechSupport],
-    'StreamingTV': [StreamingTV],
-    'StreamingMovies': [StreamingMovies],
-    'Contract': [Contract],
-    'PaperlessBilling': [PaperlessBilling],
-    'PaymentMethod': [PaymentMethod],
-    'MonthlyCharges': [MonthlyCharges],
-    'TotalCharges': [TotalCharges]
+    'tenure': [tenure]
 })
-
-# Codificar las variables categóricas
-input_data_encoded = preprocessor.transform(input_data)
-
-# Convertir a DataFrame para asegurarnos de que las columnas coinciden
-input_data_encoded_df = pd.DataFrame(input_data_encoded, columns=preprocessor.get_feature_names_out())
 
 # Botón para predecir
 if st.button("Predecir"):
-    prediction = predict_churn(input_data_encoded_df)
+    prediction = predict_churn(input_data)
     if prediction is not None:
         st.write(f"La predicción del modelo es: {'Churn' if prediction[0] == 1 else 'No Churn'}")
