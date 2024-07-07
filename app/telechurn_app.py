@@ -19,16 +19,6 @@ from sklearn.tree import DecisionTreeClassifier
 import pickle
 import streamlit as st
 
-# Función para actualizar pip e instalar dependencias
-def install_packages():
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
-
-# Llamar a la función de instalación
-install_packages()
-
-# Importar librerías necesarias después de la instalación
-from sklearn.ensemble import GradientBoostingClassifier
 
 # Cargar el modelo
 try:
