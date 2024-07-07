@@ -21,7 +21,6 @@ import streamlit as st
 from sklearn.preprocessing import OneHotEncoder
 
 
-
 # Cargar el modelo
 try:
     with open('models/modelo_gradientboosting.pkl', 'rb') as f:
@@ -39,7 +38,7 @@ categorias = [
     [0, 1],  # SeniorCitizen
     ['Yes', 'No'],  # Partner
     ['Yes', 'No'],  # Dependents
-    np.arange(0, 73),  # tenure
+    list(np.arange(0, 73)),  # tenure
     ['Yes', 'No'],  # PhoneService
     ['Yes', 'No', 'No phone service'],  # MultipleLines
     ['DSL', 'Fiber optic', 'No'],  # InternetService
@@ -79,6 +78,8 @@ dummy_data = pd.DataFrame({
     'MonthlyCharges': [29.85],
     'TotalCharges': [29.85]
 })
+
+# Ajustar el codificador
 encoder.fit(dummy_data)
 
 # Título de la aplicación
