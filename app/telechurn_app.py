@@ -33,31 +33,20 @@ except Exception as e:
     st.error(f"Error al cargar el modelo: {e}")
     st.stop()
 
-# Definir las categorías manualmente para cada característica
-categorias = [
-    ['Male', 'Female'],  # gender
-    [0, 1],  # SeniorCitizen
-    ['Yes', 'No'],  # Partner
-    ['Yes', 'No'],  # Dependents
-    list(range(0, 73)),  # tenure
-    ['Yes', 'No'],  # PhoneService
-    ['Yes', 'No', 'No phone service'],  # MultipleLines
-    ['DSL', 'Fiber optic', 'No'],  # InternetService
-    ['Yes', 'No', 'No internet service'],  # OnlineSecurity
-    ['Yes', 'No', 'No internet service'],  # OnlineBackup
-    ['Yes', 'No', 'No internet service'],  # DeviceProtection
-    ['Yes', 'No', 'No internet service'],  # TechSupport
-    ['Yes', 'No', 'No internet service'],  # StreamingTV
-    ['Yes', 'No', 'No internet service'],  # StreamingMovies
-    ['Month-to-month', 'One year', 'Two year'],  # Contract
-    ['Yes', 'No'],  # PaperlessBilling
-    ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'],  # PaymentMethod
-]
+# Definir las columnas categóricas y numéricas
+categorical_features = ['gender', 'SeniorCitizen', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 
+                        'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 
+                        'StreamingTV', 'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod']
+numeric_features = ['tenure', 'MonthlyCharges', 'TotalCharges']
 
-# Ajustar el codificador con las categorías conocidas
-encoder = OneHotEncoder(categories=categorias, sparse_output=False, handle_unknown='ignore')
+# Crear el transformador de columnas
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+    ], remainder='passthrough'  # Deja las columnas numéricas sin cambios
+)
 
-# Crear un DataFrame de ejemplo con todas las combinaciones posibles de categorías
+# Crear un DataFrame de ejemplo para ajustar el codificador
 dummy_data = pd.DataFrame({
     'gender': ['Male'],
     'SeniorCitizen': [0],
@@ -81,11 +70,7 @@ dummy_data = pd.DataFrame({
 })
 
 # Ajustar el codificador
-try:
-    encoder.fit(dummy_data)
-except ValueError as e:
-    st.error(f"Error al ajustar el codificador: {e}")
-    st.stop()
+preprocessor.fit(dummy_data)
 
 # Título de la aplicación
 st.title("Churn Prediction App")
@@ -93,11 +78,10 @@ st.title("Churn Prediction App")
 # Función para realizar predicciones
 def predict_churn(data):
     try:
-        # Codificar las variables categóricas
-        data_encoded = encoder.transform(data)
+        # Transformar las variables categóricas
+        data_encoded = preprocessor.transform(data)
         # Convertir a DataFrame para asegurarnos de que las columnas coinciden
-        encoded_df = pd.DataFrame(data_encoded, columns=encoder.get_feature_names_out())
-        prediction = loaded_model.predict(encoded_df)
+        prediction = loaded_model.predict(data_encoded)
         return prediction
     except Exception as e:
         st.error(f"Error al realizar la predicción: {e}")
@@ -152,10 +136,10 @@ input_data = pd.DataFrame({
 })
 
 # Codificar las variables categóricas
-input_data_encoded = encoder.transform(input_data)
+input_data_encoded = preprocessor.transform(input_data)
 
 # Convertir a DataFrame para asegurarnos de que las columnas coinciden
-input_data_encoded_df = pd.DataFrame(input_data_encoded, columns=encoder.get_feature_names_out())
+input_data_encoded_df = pd.DataFrame(input_data_encoded, columns=preprocessor.get_feature_names_out())
 
 # Botón para predecir
 if st.button("Predecir"):
