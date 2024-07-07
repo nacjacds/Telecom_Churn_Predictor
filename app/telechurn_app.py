@@ -45,48 +45,48 @@ def predict_churn(data):
 # Crear la interfaz de usuario con Streamlit
 st.write("Introduce las características del cliente:")
 
-# Ejemplo de características que podrías usar (ajusta según tu modelo)
+# Ejemplo de características que podrías usar (ajustar al modelo)
 gender = st.selectbox('Gender', ['Male', 'Female'])
-senior_citizen = st.selectbox('Senior Citizen', [0, 1])
-partner = st.selectbox('Partner', ['Yes', 'No'])
-dependents = st.selectbox('Dependents', ['Yes', 'No'])
+SeniorCitizen = st.selectbox('Senior Citizen', [0, 1])
+Partner = st.selectbox('Partner', ['Yes', 'No'])
+Dependents = st.selectbox('Dependents', ['Yes', 'No'])
 tenure = st.slider('Tenure (months)', 0, 72, 1)
-phone_service = st.selectbox('Phone Service', ['Yes', 'No'])
-multiple_lines = st.selectbox('Multiple Lines', ['Yes', 'No', 'No phone service'])
-internet_service = st.selectbox('Internet Service', ['DSL', 'Fiber optic', 'No'])
-online_security = st.selectbox('Online Security', ['Yes', 'No', 'No internet service'])
-online_backup = st.selectbox('Online Backup', ['Yes', 'No', 'No internet service'])
-device_protection = st.selectbox('Device Protection', ['Yes', 'No', 'No internet service'])
-tech_support = st.selectbox('Tech Support', ['Yes', 'No', 'No internet service'])
-streaming_tv = st.selectbox('Streaming TV', ['Yes', 'No', 'No internet service'])
-streaming_movies = st.selectbox('Streaming Movies', ['Yes', 'No', 'No internet service'])
-contract = st.selectbox('Contract', ['Month-to-month', 'One year', 'Two year'])
-paperless_billing = st.selectbox('Paperless Billing', ['Yes', 'No'])
-payment_method = st.selectbox('Payment Method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'])
-monthly_charges = st.number_input('Monthly Charges', min_value=0.0, max_value=150.0, value=70.0)
-total_charges = st.number_input('Total Charges', min_value=0.0, max_value=10000.0, value=70.0)
+PhoneService = st.selectbox('Phone Service', ['Yes', 'No'])
+MultipleLines = st.selectbox('Multiple Lines', ['Yes', 'No', 'No phone service'])
+InternetService = st.selectbox('Internet Service', ['DSL', 'Fiber optic', 'No'])
+OnlineSecurity = st.selectbox('Online Security', ['Yes', 'No', 'No internet service'])
+OnlineBackup = st.selectbox('Online Backup', ['Yes', 'No', 'No internet service'])
+DeviceProtection = st.selectbox('Device Protection', ['Yes', 'No', 'No internet service'])
+TechSupport = st.selectbox('Tech Support', ['Yes', 'No', 'No internet service'])
+StreamingTV = st.selectbox('Streaming TV', ['Yes', 'No', 'No internet service'])
+StreamingMovies = st.selectbox('Streaming Movies', ['Yes', 'No', 'No internet service'])
+Contract = st.selectbox('Contract', ['Month-to-month', 'One year', 'Two year'])
+PaperlessBilling = st.selectbox('Paperless Billing', ['Yes', 'No'])
+PaymentMethod = st.selectbox('Payment Method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'])
+MonthlyCharges = st.number_input('Monthly Charges', min_value=0.0, max_value=150.0, value=70.0)
+TotalCharges = st.number_input('Total Charges', min_value=0.0, max_value=10000.0, value=70.0)
 
 # Convertir las entradas en un formato adecuado para el modelo
 input_data = pd.DataFrame({
     'gender': [gender],
-    'senior_citizen': [senior_citizen],
-    'partner': [partner],
-    'dependents': [dependents],
+    'SeniorCitizen': [SeniorCitizen],
+    'Partner': [Partner],
+    'Dependents': [Dependents],
     'tenure': [tenure],
-    'phone_service': [phone_service],
-    'multiple_lines': [multiple_lines],
-    'internet_service': [internet_service],
-    'online_security': [online_security],
-    'online_backup': [online_backup],
-    'device_protection': [device_protection],
-    'tech_support': [tech_support],
-    'streaming_tv': [streaming_tv],
-    'streaming_movies': [streaming_movies],
-    'contract': [contract],
-    'paperless_billing': [paperless_billing],
-    'payment_method': [payment_method],
-    'monthly_charges': [monthly_charges],
-    'total_charges': [total_charges]
+    'PhoneService': [PhoneService],
+    'MultipleLines': [MultipleLines],
+    'InternetService': [InternetService],
+    'OnlineSecurity': [OnlineSecurity],
+    'OnlineBackup': [OnlineBackup],
+    'DeviceProtection': [DeviceProtection],
+    'TechSupport': [TechSupport],
+    'StreamingTV': [StreamingTV],
+    'StreamingMovies': [StreamingMovies],
+    'Contract': [Contract],
+    'PaperlessBilling': [PaperlessBilling],
+    'PaymentMethod': [PaymentMethod],
+    'MonthlyCharges': [MonthlyCharges],
+    'TotalCharges': [TotalCharges]
 })
 
 # Botón para predecir
