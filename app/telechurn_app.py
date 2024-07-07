@@ -32,13 +32,13 @@ except Exception as e:
     st.error(f"Error al cargar el modelo: {e}")
     st.stop()
 
-# Definir las categorías manualmente
+# Definir las categorías manualmente para cada característica
 categorias = [
     ['Male', 'Female'],  # gender
     [0, 1],  # SeniorCitizen
     ['Yes', 'No'],  # Partner
     ['Yes', 'No'],  # Dependents
-    list(np.arange(0, 73)),  # tenure
+    list(range(0, 73)),  # tenure
     ['Yes', 'No'],  # PhoneService
     ['Yes', 'No', 'No phone service'],  # MultipleLines
     ['DSL', 'Fiber optic', 'No'],  # InternetService
@@ -56,7 +56,7 @@ categorias = [
 # Ajustar el codificador con las categorías conocidas
 encoder = OneHotEncoder(categories=categorias, sparse_output=False, handle_unknown='ignore')
 
-# Crear un DataFrame con un ejemplo para ajustar el codificador
+# Crear un DataFrame de ejemplo con todas las combinaciones posibles de categorías
 dummy_data = pd.DataFrame({
     'gender': ['Male'],
     'SeniorCitizen': [0],
