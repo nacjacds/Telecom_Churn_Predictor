@@ -80,7 +80,11 @@ dummy_data = pd.DataFrame({
 })
 
 # Ajustar el codificador
-encoder.fit(dummy_data)
+try:
+    encoder.fit(dummy_data)
+except ValueError as e:
+    st.error(f"Error al ajustar el codificador: {e}")
+    st.stop()
 
 # Título de la aplicación
 st.title("Churn Prediction App")
