@@ -19,6 +19,7 @@ from sklearn.tree import DecisionTreeClassifier
 import pickle
 import streamlit as st
 
+
 # Cargar el modelo
 try:
     with open('models/modelo_gradientboosting.pkl', 'rb') as f:
@@ -54,7 +55,7 @@ example_data = pd.DataFrame({
 })
 
 # Ajustar el codificador
-encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
 encoder.fit(example_data)
 
 # Título de la aplicación
@@ -124,6 +125,6 @@ input_data_encoded = encoder.transform(input_data)
 
 # Botón para predecir
 if st.button("Predecir"):
-    prediction = predict_churn(input_data_encoded)
+    prediction = predict_churn(input_data)
     if prediction is not None:
         st.write(f"La predicción del modelo es: {'Churn' if prediction[0] == 1 else 'No Churn'}")
