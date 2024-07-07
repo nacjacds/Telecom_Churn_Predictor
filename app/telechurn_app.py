@@ -18,8 +18,6 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 import pickle
 import streamlit as st
-import subprocess
-import sys
 
 # Función para actualizar pip e instalar dependencias
 def install_packages():
