@@ -19,6 +19,7 @@ from sklearn.tree import DecisionTreeClassifier
 import pickle
 import streamlit as st
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
 
 
 # Cargar el modelo
