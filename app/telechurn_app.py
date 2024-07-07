@@ -18,6 +18,9 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 import pickle
 import streamlit as st
+from sklearn.preprocessing import OneHotEncoder
+
+
 
 # Cargar el modelo
 try:
@@ -30,13 +33,65 @@ except Exception as e:
     st.error(f"Error al cargar el modelo: {e}")
     st.stop()
 
+# Definir las categorías manualmente
+categorias = [
+    ['Male', 'Female'],  # gender
+    [0, 1],  # SeniorCitizen
+    ['Yes', 'No'],  # Partner
+    ['Yes', 'No'],  # Dependents
+    np.arange(0, 73),  # tenure
+    ['Yes', 'No'],  # PhoneService
+    ['Yes', 'No', 'No phone service'],  # MultipleLines
+    ['DSL', 'Fiber optic', 'No'],  # InternetService
+    ['Yes', 'No', 'No internet service'],  # OnlineSecurity
+    ['Yes', 'No', 'No internet service'],  # OnlineBackup
+    ['Yes', 'No', 'No internet service'],  # DeviceProtection
+    ['Yes', 'No', 'No internet service'],  # TechSupport
+    ['Yes', 'No', 'No internet service'],  # StreamingTV
+    ['Yes', 'No', 'No internet service'],  # StreamingMovies
+    ['Month-to-month', 'One year', 'Two year'],  # Contract
+    ['Yes', 'No'],  # PaperlessBilling
+    ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'],  # PaymentMethod
+]
+
+# Ajustar el codificador con las categorías conocidas
+encoder = OneHotEncoder(categories=categorias, sparse_output=False, handle_unknown='ignore')
+
+# Crear un DataFrame con un ejemplo para ajustar el codificador
+dummy_data = pd.DataFrame({
+    'gender': ['Male'],
+    'SeniorCitizen': [0],
+    'Partner': ['Yes'],
+    'Dependents': ['No'],
+    'tenure': [1],
+    'PhoneService': ['Yes'],
+    'MultipleLines': ['No phone service'],
+    'InternetService': ['DSL'],
+    'OnlineSecurity': ['No internet service'],
+    'OnlineBackup': ['No internet service'],
+    'DeviceProtection': ['No internet service'],
+    'TechSupport': ['No internet service'],
+    'StreamingTV': ['No internet service'],
+    'StreamingMovies': ['No internet service'],
+    'Contract': ['Month-to-month'],
+    'PaperlessBilling': ['Yes'],
+    'PaymentMethod': ['Electronic check'],
+    'MonthlyCharges': [29.85],
+    'TotalCharges': [29.85]
+})
+encoder.fit(dummy_data)
+
 # Título de la aplicación
 st.title("Churn Prediction App")
 
 # Función para realizar predicciones
 def predict_churn(data):
     try:
-        prediction = loaded_model.predict(data)
+        # Codificar las variables categóricas
+        data_encoded = encoder.transform(data)
+        # Convertir a DataFrame para asegurarnos de que las columnas coinciden
+        encoded_df = pd.DataFrame(data_encoded, columns=encoder.get_feature_names_out())
+        prediction = loaded_model.predict(encoded_df)
         return prediction
     except Exception as e:
         st.error(f"Error al realizar la predicción: {e}")
@@ -45,7 +100,8 @@ def predict_churn(data):
 # Crear la interfaz de usuario con Streamlit
 st.write("Introduce las características del cliente:")
 
-# Ejemplo de características que podrías usar (ajustar al modelo)
+# Ejemplo de características que podrías usar (ajusta según tu modelo)
+customer_id = st.text_input('Customer ID')
 gender = st.selectbox('Gender', ['Male', 'Female'])
 SeniorCitizen = st.selectbox('Senior Citizen', [0, 1])
 Partner = st.selectbox('Partner', ['Yes', 'No'])
@@ -89,8 +145,14 @@ input_data = pd.DataFrame({
     'TotalCharges': [TotalCharges]
 })
 
+# Codificar las variables categóricas
+input_data_encoded = encoder.transform(input_data)
+
+# Convertir a DataFrame para asegurarnos de que las columnas coinciden
+input_data_encoded_df = pd.DataFrame(input_data_encoded, columns=encoder.get_feature_names_out())
+
 # Botón para predecir
 if st.button("Predecir"):
-    prediction = predict_churn(input_data)
+    prediction = predict_churn(input_data_encoded_df)
     if prediction is not None:
         st.write(f"La predicción del modelo es: {'Churn' if prediction[0] == 1 else 'No Churn'}")
