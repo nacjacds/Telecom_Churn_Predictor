@@ -30,15 +30,38 @@ except Exception as e:
     st.error(f"Error al cargar el modelo: {e}")
     st.stop()
 
-# Definir el codificador
-encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
-
-# Ajustar el codificador con las categorías conocidas
+# Definir el codificador y ajustar con las categorías conocidas
 # Estas categorías deben coincidir con las del modelo entrenado
-encoder.fit([
-    ['Male', 0, 'Yes', 'No', 1, 'Yes', 'No', 'DSL', 'Yes', 'No', 'No', 'No', 'No', 'No', 'Month-to-month', 'Yes', 'Electronic check', 29.85, 29.85]
-    # Agrega más ejemplos con todas las combinaciones de categorías posibles
-])
+categorias = [
+    ['Male', 'Female'],
+    [0, 1],
+    ['Yes', 'No'],
+    ['Yes', 'No'],
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72],
+    ['Yes', 'No'],
+    ['Yes', 'No', 'No phone service'],
+    ['DSL', 'Fiber optic', 'No'],
+    ['Yes', 'No', 'No internet service'],
+    ['Yes', 'No', 'No internet service'],
+    ['Yes', 'No', 'No internet service'],
+    ['Yes', 'No', 'No internet service'],
+    ['Yes', 'No', 'No internet service'],
+    ['Yes', 'No', 'No internet service'],
+    ['Month-to-month', 'One year', 'Two year'],
+    ['Yes', 'No'],
+    ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'],
+    [0.0],  # MonthlyCharges as float, should be a wide range but setting a single value for simplicity
+    [0.0]   # TotalCharges as float, should be a wide range but setting a single value for simplicity
+]
+
+encoder = OneHotEncoder(categories=categorias, sparse=False, handle_unknown='ignore')
+
+# Ajustar el codificador con un DataFrame vacío para inicializar las categorías
+encoder.fit(pd.DataFrame([categorias], columns=[
+    'gender', 'SeniorCitizen', 'Partner', 'Dependents', 'tenure', 'PhoneService', 'MultipleLines', 'InternetService',
+    'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract',
+    'PaperlessBilling', 'PaymentMethod', 'MonthlyCharges', 'TotalCharges'
+]))
 
 # Título de la aplicación
 st.title("Churn Prediction App")
