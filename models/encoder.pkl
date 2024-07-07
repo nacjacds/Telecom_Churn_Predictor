@@ -1,0 +1,16 @@
+from sklearn.preprocessing import OneHotEncoder
+
+# Ejemplo de entrenamiento y guardado del codificador
+encoder = OneHotEncoder()
+X_encoded = encoder.fit_transform(X)  # Suponiendo que 'X' es tu conjunto de características
+
+# Entrena tu modelo con X_encoded
+model = GradientBoostingClassifier()
+model.fit(X_encoded, y)
+
+# Guarda el modelo y el codificador
+with open('models/modelo_gradientboosting.pkl', 'wb') as f:
+    pickle.dump(model, f)
+
+with open('models/encoder.pkl', 'wb') as f:
+    pickle.dump(encoder, f)
