@@ -46,7 +46,6 @@ contract_values = contract_map[contract_type]
 tenure = st.slider('Tenure (in months)', min_value=0, max_value=72, step=1)
 
 # Inputs for Services
-st.h4('Hired Services')
 services = {
     'InternetService_Fiber optic': st.checkbox('Fiber optic Internet Service'),
     'OnlineSecurity': st.checkbox('Online Security'),
