@@ -19,119 +19,87 @@ from sklearn.tree import DecisionTreeClassifier
 import pickle
 import streamlit as st
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
 
 
-# Cargar el modelo
-try:
-    with open('models/modelo_gradientboosting.pkl', 'rb') as f:
-        loaded_model = pickle.load(f)
-except FileNotFoundError:
-    st.error("El archivo del modelo no se encuentra en la ruta especificada.")
-    st.stop()
-except Exception as e:
-    st.error(f"Error al cargar el modelo: {e}")
-    st.stop()
+# Load your model
+with open('models/modelo_gradientboosting.pkl', 'rb') as f:
+    model = pickle.load(f)
 
-# Definir las columnas categóricas y numéricas
-categorical_features = ['InternetService', 'PaymentMethod', 'OnlineSecurity', 'OnlineBackup',
-                        'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies', 'MultipleLines',
-                        'Dependents', 'Partner', 'Contract_Month-to-month', 'Contract_One year', 'Contract_Two year']
-numeric_features = ['tenure', 'MonthlyCharges', 'TotalCharges']
+# Title of the app
+st.title('Customer Churn Prediction App')
 
-# Crear el transformador de columnas
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('cat', OneHotEncoder(drop='first'), categorical_features)  # drop='first' para evitar la trampa de las variables ficticias
-    ], remainder='passthrough'  # Deja las columnas numéricas sin cambios
+# Inputs for Type of Contract
+contract_type = st.selectbox(
+    'Type of contract',
+    ['Month-to-month', 'One year', 'Two year']
 )
 
-# Crear un DataFrame de ejemplo para ajustar el codificador
-dummy_data = pd.DataFrame({
-    'Contract_Month-to-month': [1],
-    'Contract_One year': [0],
-    'Contract_Two year': [0],
-    'InternetService': ['DSL'],
-    'PaymentMethod': ['Electronic check'],
-    'OnlineSecurity': ['Yes'],
-    'OnlineBackup': ['Yes'],
-    'DeviceProtection': ['Yes'],
-    'TechSupport': ['Yes'],
-    'StreamingTV': ['Yes'],
-    'StreamingMovies': ['Yes'],
-    'MultipleLines': ['No phone service'],
-    'Dependents': ['No'],
-    'Partner': ['Yes'],
-    'tenure': [1],
-    'MonthlyCharges': [29.85],
-    'TotalCharges': [29.85]
-})
+# Mapping contract type to one-hot encoding
+contract_map = {
+    'Month-to-month': [1, 0, 0],
+    'One year': [0, 0, 1],
+    'Two year': [0, 1, 0]
+}
+contract_values = contract_map[contract_type]
 
-# Ajustar el codificador
-preprocessor.fit(dummy_data)
+# Input for tenure
+tenure = st.slider('Tenure (in months)', min_value=0, max_value=72, step=1)
 
-# Título de la aplicación
-st.title("Churn Prediction App")
+# Inputs for Services
+services = {
+    'InternetService_Fiber optic': st.checkbox('Fiber optic Internet Service'),
+    'OnlineSecurity': st.checkbox('Online Security'),
+    'OnlineBackup': st.checkbox('Online Backup'),
+    'DeviceProtection': st.checkbox('Device Protection'),
+    'TechSupport': st.checkbox('Tech Support'),
+    'StreamingTV': st.checkbox('Streaming TV'),
+    'StreamingMovies': st.checkbox('Streaming Movies'),
+    'MultipleLines': st.checkbox('Multiple Lines')
+}
 
-# Función para realizar predicciones
-def predict_churn(data):
-    try:
-        # Transformar las variables categóricas
-        data_encoded = preprocessor.transform(data)
-        # Hacer la predicción
-        prediction = loaded_model.predict(data_encoded)
-        return prediction
-    except Exception as e:
-        st.error(f"Error al realizar la predicción: {e}")
-        return None
+# Inputs for Payment
+payment_method = st.selectbox(
+    'Payment method',
+    ['Electronic check', 'Other']
+)
 
-# Crear la interfaz de usuario con Streamlit
-st.write("Introduce las características del cliente:")
+# Mapping payment method to one-hot encoding
+payment_map = {
+    'Electronic check': 1,
+    'Other': 0
+}
+payment_method_value = payment_map[payment_method]
 
-# Entradas de las características
-contract = st.selectbox('Contract', ['Month-to-month', 'One year', 'Two year'])
-contract_month_to_month = 1 if contract == 'Month-to-month' else 0
-contract_one_year = 1 if contract == 'One year' else 0
-contract_two_year = 1 if contract == 'Two year' else 0
+monthly_charges = st.number_input('Monthly Charges', min_value=0.0)
+total_charges = st.number_input('Total Charges', min_value=0.0)
 
-internet_service = st.selectbox('Internet Service', ['DSL', 'Fiber optic', 'No'])
-payment_method = st.selectbox('Payment Method', ['Electronic check', 'Mailed check', 'Bank transfer (automatic)', 'Credit card (automatic)'])
-online_security = st.selectbox('Online Security', ['Yes', 'No', 'No internet service'])
-online_backup = st.selectbox('Online Backup', ['Yes', 'No', 'No internet service'])
-device_protection = st.selectbox('Device Protection', ['Yes', 'No', 'No internet service'])
-tech_support = st.selectbox('Tech Support', ['Yes', 'No', 'No internet service'])
-streaming_tv = st.selectbox('Streaming TV', ['Yes', 'No', 'No internet service'])
-streaming_movies = st.selectbox('Streaming Movies', ['Yes', 'No', 'No internet service'])
-multiple_lines = st.selectbox('Multiple Lines', ['Yes', 'No', 'No phone service'])
-dependents = st.selectbox('Dependents', ['Yes', 'No'])
-partner = st.selectbox('Partner', ['Yes', 'No'])
-tenure = st.slider('Tenure (months)', 0, 72, 1)
-monthly_charges = st.number_input('Monthly Charges', min_value=0.0, max_value=150.0, value=70.0)
-total_charges = st.number_input('Total Charges', min_value=0.0, max_value=10000.0, value=70.0)
+# Inputs for Type of Customer
+dependents = st.checkbox('Dependents')
+partner = st.checkbox('Partner')
 
-# Convertir las entradas en un formato adecuado para el modelo
-input_data = pd.DataFrame({
-    'Contract_Month-to-month': [contract_month_to_month],
-    'Contract_One year': [contract_one_year],
-    'Contract_Two year': [contract_two_year],
-    'InternetService': [internet_service],
-    'PaymentMethod': [payment_method],
-    'OnlineSecurity': [online_security],
-    'OnlineBackup': [online_backup],
-    'DeviceProtection': [device_protection],
-    'TechSupport': [tech_support],
-    'StreamingTV': [streaming_tv],
-    'StreamingMovies': [streaming_movies],
-    'MultipleLines': [multiple_lines],
-    'Dependents': [dependents],
-    'Partner': [partner],
-    'tenure': [tenure],
-    'MonthlyCharges': [monthly_charges],
-    'TotalCharges': [total_charges]
-})
+# Prepare the input array for the model
+input_data = np.array([[
+    contract_values[0], contract_values[1], contract_values[2],
+    tenure,
+    int(services['InternetService_Fiber optic']),
+    int(services['OnlineSecurity']),
+    int(services['OnlineBackup']),
+    int(services['DeviceProtection']),
+    int(services['TechSupport']),
+    int(services['StreamingTV']),
+    int(services['StreamingMovies']),
+    int(services['MultipleLines']),
+    payment_method_value,
+    monthly_charges,
+    total_charges,
+    int(dependents),
+    int(partner)
+]])
 
-# Botón para predecir
-if st.button("Predecir"):
-    prediction = predict_churn(input_data)
-    if prediction is not None:
-        st.write(f"La predicción del modelo es: {'Churn' if prediction[0] == 1 else 'No Churn'}")
+# Button to trigger prediction
+if st.button('Predict'):
+    # Get the prediction from the model
+    prediction = model.predict(input_data)
+    
+    # Display the prediction
+    st.write(f'The predicted churn is: {"Yes" if prediction[0] == 1 else "No"}')
