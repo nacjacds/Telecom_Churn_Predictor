@@ -20,51 +20,45 @@ import pickle
 import streamlit as st
 from sklearn.preprocessing import OneHotEncoder
 
-
-# Load your model
+# Cargar el modelo
 with open('models/modelo_gradientboosting.pkl', 'rb') as f:
     model = pickle.load(f)
 
-# Title of the app
+# Título de la aplicación
 st.title('Customer Churn Prediction App')
 
-# Inputs for Type of Contract
+# Inputs para el tipo de contrato
 contract_type = st.selectbox(
     'Type of contract',
-    ['Month-to-month', 'One year', 'Two year']
+    ['Month-to-month', 'Two year']
 )
 
-# Mapping contract type to one-hot encoding
+# Mapeo del tipo de contrato a one-hot encoding
 contract_map = {
-    'Month-to-month': [1, 0, 0],
-    'One year': [0, 0, 1],
-    'Two year': [0, 1, 0]
+    'Month-to-month': [1, 0],
+    'Two year': [0, 1]
 }
 contract_values = contract_map[contract_type]
 
-# Input for tenure
+# Input para tenure
 tenure = st.slider('Tenure (in months)', min_value=0, max_value=72, step=1)
 
-# Inputs for Services
+# Inputs para los servicios contratados
 st.write('Hired Services')
 services = {
     'InternetService_Fiber optic': st.checkbox('Fiber optic Internet Service'),
     'OnlineSecurity': st.checkbox('Online Security'),
-    'OnlineBackup': st.checkbox('Online Backup'),
-    'DeviceProtection': st.checkbox('Device Protection'),
     'TechSupport': st.checkbox('Tech Support'),
-    'StreamingTV': st.checkbox('Streaming TV'),
-    'StreamingMovies': st.checkbox('Streaming Movies'),
     'MultipleLines': st.checkbox('Multiple Lines')
 }
 
-# Inputs for Payment
+# Inputs para el método de pago
 payment_method = st.selectbox(
     'Payment method',
     ['Electronic check', 'Other']
 )
 
-# Mapping payment method to one-hot encoding
+# Mapeo del método de pago a one-hot encoding
 payment_map = {
     'Electronic check': 1,
     'Other': 0
@@ -74,33 +68,23 @@ payment_method_value = payment_map[payment_method]
 monthly_charges = st.number_input('Monthly Charges', min_value=0.0)
 total_charges = st.number_input('Total Charges', min_value=0.0)
 
-# Inputs for Type of Customer
-dependents = st.checkbox('Dependents')
-partner = st.checkbox('Partner')
-
-# Prepare the input array for the model
+# Preparar el array de entrada para el modelo
 input_data = np.array([[
-    contract_values[0], contract_values[1], contract_values[2],
-    tenure,
-    int(services['InternetService_Fiber optic']),
-    int(services['OnlineSecurity']),
-    int(services['OnlineBackup']),
-    int(services['DeviceProtection']),
-    int(services['TechSupport']),
-    int(services['StreamingTV']),
-    int(services['StreamingMovies']),
-    int(services['MultipleLines']),
-    payment_method_value,
-    monthly_charges,
-    total_charges,
-    int(dependents),
-    int(partner)
+    contract_values[0], contract_values[1],  # Contract
+    tenure,  # Tenure
+    int(services['InternetService_Fiber optic']),  # InternetService_Fiber optic
+    int(services['OnlineSecurity']),  # OnlineSecurity
+    int(services['TechSupport']),  # TechSupport
+    int(services['MultipleLines']),  # MultipleLines
+    payment_method_value,  # PaymentMethod_Electronic check
+    monthly_charges,  # MonthlyCharges
+    total_charges  # TotalCharges
 ]])
 
-# Button to trigger prediction
+# Botón para desencadenar la predicción
 if st.button('Predict'):
-    # Get the prediction from the model
+    # Obtener la predicción del modelo
     prediction = model.predict(input_data)
     
-    # Display the prediction
-    st.write(f'Prediction: {"The customer IS sensitive to churn due to their type, contracted services, and other factors." if prediction[0] == 1 else "The customer IS NOT sensitive to churn due to their type, contracted services, and other factors."}')
+    # Mostrar la predicción
+    st.write(f'Prediction: {"The customer IS likely to churn." if prediction[0] == 1 else "The customer is NOT likely to churn."}')
