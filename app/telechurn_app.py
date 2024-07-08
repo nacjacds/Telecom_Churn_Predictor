@@ -21,7 +21,7 @@ import streamlit as st
 from sklearn.preprocessing import OneHotEncoder
 
 # Cargar el modelo
-with open('models/modelo_gradientboosting.pkl', 'rb') as f:
+with open('models/gbc_pipeline_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # Título de la aplicación
