@@ -103,4 +103,4 @@ if st.button('Predict'):
     prediction = model.predict(input_data)
     
     # Display the prediction
-    st.write(f'The predicted churn is: {"Yes" if prediction[0] == 1 else "No"}')
+    st.write(f'Prediction: {"The customer IS sensitive to churn due to their type, contracted services, and other factors." if prediction[0] == 1 else "The customer IS NOT sensitive to churn due to their type, contracted services, and other factors."}')
