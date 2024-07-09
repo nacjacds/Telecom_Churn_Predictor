@@ -25,7 +25,7 @@ with open('models/best_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # Título de la aplicación
-st.title('Customer Churn Prediction App')
+st.title('Customer Churn Predictor')
 
 # Inputs para el tipo de contrato
 contract_type = st.selectbox(
@@ -65,7 +65,7 @@ payment_map = {
 }
 payment_method_value = payment_map[payment_method]
 
-monthly_charges = st.number_input('Monthly Charges', min_value=0.0)
+monthly_charges = st.number_input('Monthly Charges', min_value=20)
 
 # Preparar el array de entrada para el modelo
 input_data = np.array([[
