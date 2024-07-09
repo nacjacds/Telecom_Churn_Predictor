@@ -66,7 +66,6 @@ payment_map = {
 payment_method_value = payment_map[payment_method]
 
 monthly_charges = st.number_input('Monthly Charges', min_value=0.0)
-total_charges = st.number_input('Total Charges', min_value=0.0)
 
 # Preparar el array de entrada para el modelo
 input_data = np.array([[
@@ -78,7 +77,6 @@ input_data = np.array([[
     int(services['MultipleLines']),  # MultipleLines
     payment_method_value,  # PaymentMethod_Electronic check
     monthly_charges,  # MonthlyCharges
-    total_charges  # TotalCharges
 ]])
 
 # Botón para desencadenar la predicción
