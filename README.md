@@ -1,50 +1,53 @@
-# Customer Churn Prediction for a Telecom Provider
+# Customer Churn Predictor for a Telecom Provider
 
 This project aims to predict customer churn for a telecommunications company using machine learning models. Customer churn prediction helps the company identify customers who are likely to cancel their service, enabling proactive retention strategies.
-
-## Table of Contents
-
-- [Problem Statement](#problem-statement)
-- [Dataset](#dataset)
-- [Feature Engineering](#feature-engineering)
-- [Model Selection](#model-selection)
-- [Evaluation](#evaluation)
-- [Results](#results)
-- [How to Run](#how-to-run)
-- [Dependencies](#dependencies)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Problem Statement
 
 The objective is to predict the likelihood of customer churn, defined as customers who leave the company's services. High churn rates can significantly impact revenue and profitability, making churn prediction a critical task.
 
+## Project Description
+
+This project aims to predict churn (customer attrition) in a telecommunications company. Predicting churn enables the company to take proactive measures to retain its customers, thereby improving customer satisfaction and reducing the churn rate.
+
 ## Dataset
 
-The dataset used in this project contains information about customers, such as their demographic details, service usage, and contract information. The key features include:
+The dataset used comes from a Californian internet service provider. This dataset includes various customer features, such as demographic information, service usage data, and account details.
 
-- `gender`
-- `SeniorCitizen`
-- `Partner`
-- `Dependents`
-- `tenure`
-- `PhoneService`
-- `MultipleLines`
-- `InternetService`
-- `OnlineSecurity`
-- `OnlineBackup`
-- `DeviceProtection`
-- `TechSupport`
-- `StreamingTV`
-- `StreamingMovies`
-- `Contract`
-- `PaperlessBilling`
-- `PaymentMethod`
-- `MonthlyCharges`
-- `TotalCharges`
-- `Churn`
+## Data Preprocessing
 
-## Feature Engineering
+1. **Data Cleaning**: Missing values were removed and outliers were handled.
+2. **Categorical Variable Encoding**: Categorical and binary variables were converted to numeric format using one-hot encoding techniques.
+3. **Class Balancing**: SMOTE (Synthetic Minority Over-sampling Technique) was used to balance the classes and improve the model's ability to predict the minority class.
+
+## Models Used
+
+1. **Decision Tree**: A model based on decision rules.
+2. **Random Forest**: An ensemble of multiple decision trees.
+3. **Gradient Boosting**: A sequentially improving model.
+4. **SVM (Support Vector Machine)**: Finds an optimal hyperplane for class separation.
+5. **ANN (Artificial Neural Network)**: A model inspired by the structure of the human brain.
+6. **Logistic Regression**: A binary classification model based on the logistic function.
+
+## Hyperparameter Optimization
+
+An exhaustive search for the best hyperparameters was performed using GridSearchCV. The parameters adjusted include:
+
+- **SMOTE**:
+  - `sampling_strategy`: Sampling strategies (0.5 to 1.0)
+  - `k_neighbors`: Number of neighbors (3 to 13)
+- **Logistic Regression**:
+  - `C`: Regularization parameter (0.0001 to 10000)
+  - `penalty`: Types of penalty (`l1`, `l2`, `elasticnet`)
+  - `solver`: Optimization algorithms (`lbfgs`, `saga`, `liblinear`, `newton-cg`)
+
+## Model Validation
+
+To ensure the robustness and generalizability of the model, k-fold cross-validation was used to evaluate the model's generalization ability and control overfitting. This technique divides the data into several subsets, improving the evaluation of the model's performance.
+
+## Results
+
+The Logistic Regression model, after being balanced, normalized, and optimized, showed superior performance in terms of Recall, achieving a score of 0.83. This high Recall indicates an excellent ability of the model to identify customers at risk of churn.
 
 ### Steps:
 1. **Handling Missing Values**: Replace missing values or spaces with NaN and then impute or drop them as necessary.
