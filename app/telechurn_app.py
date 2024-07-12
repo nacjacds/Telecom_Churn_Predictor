@@ -21,7 +21,7 @@ import streamlit as st
 from sklearn.preprocessing import OneHotEncoder
 
 # Cargar el modelo
-with open('models/best_model.pkl', 'rb') as f:
+with open('/mnt/data/best_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # Título de la aplicación
@@ -84,5 +84,9 @@ if st.button('Predict'):
     # Obtener la predicción del modelo
     prediction = model.predict(input_data)
     
+    # Obtener la probabilidad de churn
+    probability = model.predict_proba(input_data)[0][1] * 100
+    
     # Mostrar la predicción
     st.write(f'Prediction: {"The customer IS likely to churn." if prediction[0] == 1 else "The customer is NOT likely to churn."}')
+    st.write(f'Probability of churn: {probability:.2f}%')
